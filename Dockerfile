@@ -1,51 +1,22 @@
-# Pull a lightweight version of Ubuntu
-FROM ubuntu:22.04
-
-
-# Set environment variables for non-interactive installations
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Install Java 17, Maven, Git, and other necessary packages
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends openjdk-17-jdk \
-    maven -y \
-    git -y \
-    ca-certificates \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Set JAVA_HOME environment variable
-RUN export JAVA_HOME="$(dirname $(dirname $(readlink -f $(which java))))"
-ENV export MAVEN_HOME="$(dirname $(dirname $(readlink -f $(which mvn))))"
-ENV PATH=$JAVA_HOME/bin:$MAVEN_HOME/bin:$PATH
-
-
-
-# Verify installations
-RUN echo $PATH
-
-RUN echo $JAVA_HOME && \
-    echo "Print java Path" && \
-    which java && \
-    java -version && \
-    javac -version && \
-    echo "Print MVN path" && \
-    which mvn && \
-    which git && \
-    mvn -version && \
-    git --version
-
+FROM maven:3.8.3-openjdk-17 AS base
 
 # Set the working directory in the container
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Copy the user service project files into the container
-COPY . /usr/src/app
+COPY pom.xml .
 
+COPY src ./src
 # Build the project using Maven
 RUN mvn clean package -Dmaven.test.skip=true
 
+
+FROM maven:3.8.3-openjdk-17 AS runtime
+
+WORKDIR /app
 # Expose the port that the ratings service will run on
 EXPOSE 8083
 
+COPY --from=base app/target/Rating-0.0.1-SNAPSHOT.jar target/Rating-0.0.1-SNAPSHOT.jar
 # Run the ratings service
 CMD ["java", "-jar", "target/Rating-0.0.1-SNAPSHOT.jar"]
