@@ -11,7 +11,7 @@ COPY src ./src
 RUN mvn clean package -Dmaven.test.skip=true
 
 
-FROM maven:3.8.3-openjdk-17 AS runtime
+FROM  maven:3.9.9-eclipse-temurin-21-alpine AS runtime
 
 WORKDIR /app
 # Expose the port that the ratings service will run on
