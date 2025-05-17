@@ -5,7 +5,5 @@ metadata:
 data: 
   MONGO_INITDB_ROOT_USERNAME: ratingsuser
   MONGO_INITDB_DATABASE: ratings-db
-  MONGO_APP_PORT: "8083"
-  MONGO_DB_PORT: "27017"
   MONGO_IMAGE_NAME: nitesh2611/ratings-svc:2
   MONGODB_URI: mongodb://mongodb-svc:27017/ratings-db

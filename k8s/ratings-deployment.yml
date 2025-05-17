@@ -65,4 +65,4 @@ spec:
               key: MONGO_IMAGE_NAME
         ports:
         - containerPort: 8083 # Corrected quoting
-          name: ratings-app-port
+          name: ratings-port
