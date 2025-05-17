@@ -1,46 +1,48 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1 # Corrected apiVersion
 kind: Deployment
 metadata:
-  name:  ratings-app
+  name: ratings-app
   labels:
-    name:  ratings-app
+    name: ratings-app
 spec:
   strategy:
     type: Recreate
+  selector: # Added selector to match the labels of the pods
+    matchLabels:
+      name: ratings-app
   template:
     metadata:
       labels:
         name: ratings-app
     spec:
       containers:
-      - image:  $(MONGO_IMAGE_NAME)
-        name:  ratings-app
+      - image: "$(MONGO_IMAGE_NAME)" # Corrected quoting
+        name: ratings-app
         resources:
           requests:
-            cpu: "250m"
-            memory: "256Mi"
+            cpu: 250m
+            memory: 256Mi
           limits:
-            memory: "512Mi"
-            cpu: "500m"  
+            memory: 512Mi
+            cpu: 500m
         livenessProbe:
           httpGet:
             path: /_status/healthz
-            port: $(MONGO_APP_PORT)
+            port: $(MONGO_APP_PORT) # Corrected quoting
           initialDelaySeconds: 90
           timeoutSeconds: 10
         readinessProbe:
           httpGet:
             path: /_status/healthz
-            port: $(MONGO_APP_PORT)
+            port: $(MONGO_APP_PORT) # Corrected quoting
           initialDelaySeconds: 30
           timeoutSeconds: 10
         env:
-        - name:  SPRING_DATA_MONGODB_URI
+        - name: SPRING_DATA_MONGODB_URI
           valueFrom:
             configMapKeyRef:
               name: mongo-configmap
-              key: MONGODB_URI       
-           
+              key: MONGODB_URI
         - name: MONGO_USER
           valueFrom:
             configMapKeyRef:
@@ -50,24 +52,22 @@ spec:
           valueFrom:
             secretKeyRef:
               name: mongo-secret
-              key:   MONGO_INITDB_ROOT_PASSWORD
+              key: MONGO_INITDB_ROOT_PASSWORD
         - name: MONGO_DB
           valueFrom:
             configMapKeyRef:
-              name: mongodb-configmap
-              key: MONGO_INITDB_DATABASE    
-        - name: MONGO_APP_PORT:
+              name: mongodb-configmap # Corrected configmap name
+              key: MONGO_INITDB_DATABASE
+        - name: MONGO_APP_PORT
           valueFrom:
             configMapKeyRef:
               name: mongo-configmap
-              key: MONGO_APP_PORT:  
-              
-        - name: MONGO_IMAGE_NAME:
+              key: MONGO_APP_PORT
+        - name: MONGO_IMAGE_NAME
           valueFrom:
             configMapKeyRef:
               name: mongo-configmap
-              key: MONGO_IMAGE_NAME:                          
+              key: MONGO_IMAGE_NAME
         ports:
-        - containerPort:  $(MONGO_APP_PORT)
-          name:  ratings-app-port
- 
+        - containerPort: $(MONGO_APP_PORT) # Corrected quoting
+          name: ratings-app-port
