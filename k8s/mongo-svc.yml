@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name:  mongodb-svc
+spec:
+  selector:
+    app:  mongodb
+  type:  ClusterIP
+  ports:
+  - name:  monogo-db-port
+    port:  $(MONGO_DB_PORT)
+    targetPort:  $(MONGO_DB_PORT)

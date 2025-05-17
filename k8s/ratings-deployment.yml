@@ -1,0 +1,73 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name:  ratings-app
+  labels:
+    name:  ratings-app
+spec:
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: ratings-app
+    spec:
+      containers:
+      - image:  $(MONGO_IMAGE_NAME)
+        name:  ratings-app
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"  
+        livenessProbe:
+          httpGet:
+            path: /_status/healthz
+            port: $(MONGO_APP_PORT)
+          initialDelaySeconds: 90
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /_status/healthz
+            port: $(MONGO_APP_PORT)
+          initialDelaySeconds: 30
+          timeoutSeconds: 10
+        env:
+        - name:  SPRING_DATA_MONGODB_URI
+          valueFrom:
+            configMapKeyRef:
+              name: mongo-configmap
+              key: MONGODB_URI       
+           
+        - name: MONGO_USER
+          valueFrom:
+            configMapKeyRef:
+              name: mongo-configmap
+              key: MONGO_INITDB_ROOT_USERNAME
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key:   MONGO_INITDB_ROOT_PASSWORD
+        - name: MONGO_DB
+          valueFrom:
+            configMapKeyRef:
+              name: mongodb-configmap
+              key: MONGO_INITDB_DATABASE    
+        - name: MONGO_APP_PORT:
+          valueFrom:
+            configMapKeyRef:
+              name: mongo-configmap
+              key: MONGO_APP_PORT:  
+              
+        - name: MONGO_IMAGE_NAME:
+          valueFrom:
+            configMapKeyRef:
+              name: mongo-configmap
+              key: MONGO_IMAGE_NAME:                          
+        ports:
+        - containerPort:  $(MONGO_APP_PORT)
+          name:  ratings-app-port
+ 

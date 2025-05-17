@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+spec:
+  serviceName: mongodb-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo:6.0 
+        ports:
+        - name: monog-port
+          containerPort: $(MONGO_DB_PORT)
+        env:
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name:  mongo-secret # Inject password from Secret
+                key: MONGO_INITDB_ROOT_PASSWORD  
+          - name:  MONGO_INITDB_DATABASE
+            valueFrom:
+              configMapKeyref:
+                name: mongo-configmap
+                key: MONGO_INITDB_DATABASE
+
+         - name:  MONGO_DB_PORT
+            valueFrom:
+              configMapKeyref:
+                name: mongo-configmap
+                key: MONGO_DB_PORT
+
+          - name:  MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              configMapKeyref:
+                name: mongo-configmap
+                key: MONGO_INITDB_ROOT_USERNAME
+          volumeMounts:
+        - name: mongodb-data # Must match the name in volumeClaimTemplates
+          mountPath: /data/db # Default MongoDB data directory
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi" # Adjust based on your workload
+            cpu: "1"
+        livenessProbe: # Checks if the MongoDB process is still running
+          exec:
+            command: ["mongosh", "--eval", "db.adminCommand('ping')"]
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+        readinessProbe: # Checks if the MongoDB instance is ready to serve traffic
+          exec:
+            command: ["mongosh", "--eval", "db.adminCommand('replSetGetStatus').ok || db.adminCommand('ping')"]
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+          successThreshold: 1
+      # No initContainer for permissions needed here, as MongoDB image usually handles it
+      # Or rely on the StorageClass's default GID/ownership
+      
+  volumeClaimTemplates: # Automatically creates PVCs for each replica
+  - metadata:
+      name: mongodb-data # Must match the volumeMounts.name
+    spec:
+      accessModes: [ "ReadWriteOnce" ] # Mountable as read-write by a single node
+      resources:
+        requests:
+          storage: 1Gi # Request 10 GB of storage, adjust as needed
+      storageClassName: ebs-sc      
