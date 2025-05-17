@@ -31,7 +31,7 @@ spec:
                 name: mongo-configmap
                 key: MONGO_INITDB_DATABASE
 
-         - name:  MONGO_DB_PORT
+          - name:  MONGO_DB_PORT
             valueFrom:
               configMapKeyref:
                 name: mongo-configmap
@@ -42,9 +42,9 @@ spec:
               configMapKeyref:
                 name: mongo-configmap
                 key: MONGO_INITDB_ROOT_USERNAME
-          volumeMounts:
-        - name: mongodb-data # Must match the name in volumeClaimTemplates
-          mountPath: /data/db # Default MongoDB data directory
+        volumeMounts:
+          - name: mongodb-data # Must match the name in volumeClaimTemplates
+            mountPath: /data/db # Default MongoDB data directory
         resources:
           requests:
             memory: "1Gi"
