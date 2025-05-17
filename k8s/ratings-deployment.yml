@@ -56,7 +56,7 @@ spec:
         - name: MONGO_DB
           valueFrom:
             configMapKeyRef:
-              name: mongodb-configmap # Corrected configmap name
+              name: mongo-configmap # Corrected configmap name
               key: MONGO_INITDB_DATABASE
         - name: MONGO_IMAGE_NAME
           valueFrom:
