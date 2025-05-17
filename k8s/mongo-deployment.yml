@@ -29,7 +29,7 @@ spec:
             valueFrom:
               configMapKeyRef:
                 key: MONGO_INITDB_ROOT_USERNAME
-                name: mongo-secret
+                name: mongo-configmap
         volumeMounts:
           - name: mongodb-data # Must match the name in volumeClaimTemplates
             mountPath: /data/db # Default MongoDB data directory
