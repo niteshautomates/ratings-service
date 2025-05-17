@@ -25,6 +25,11 @@ spec:
               secretKeyRef:
                 name:  mongo-secret # Inject password from Secret
                 key: MONGO_INITDB_ROOT_PASSWORD  
+          - name: MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              configMapKeyRef:
+                key: MONGO_INITDB_ROOT_USERNAME
+                name: mongo-secret
         volumeMounts:
           - name: mongodb-data # Must match the name in volumeClaimTemplates
             mountPath: /data/db # Default MongoDB data directory
