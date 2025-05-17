@@ -18,7 +18,7 @@ spec:
         image: mongo:6.0 
         ports:
         - name: monog-port
-          containerPort: $(MONGO_DB_PORT)
+          containerPort: 27017
         env:
           - name: MONGO_INITDB_ROOT_PASSWORD
             valueFrom:

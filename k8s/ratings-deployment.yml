@@ -28,13 +28,13 @@ spec:
         livenessProbe:
           httpGet:
             path: /_status/healthz
-            port: $(MONGO_APP_PORT) # Corrected quoting
+            port: 8083 # Corrected quoting
           initialDelaySeconds: 90
           timeoutSeconds: 10
         readinessProbe:
           httpGet:
             path: /_status/healthz
-            port: $(MONGO_APP_PORT) # Corrected quoting
+            port: 8083 # Corrected quoting
           initialDelaySeconds: 30
           timeoutSeconds: 10
         env:
@@ -69,5 +69,5 @@ spec:
               name: mongo-configmap
               key: MONGO_IMAGE_NAME
         ports:
-        - containerPort: $(MONGO_APP_PORT) # Corrected quoting
+        - containerPort: 8083 # Corrected quoting
           name: ratings-app-port

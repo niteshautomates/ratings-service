@@ -8,5 +8,5 @@ spec:
   type:  ClusterIP
   ports:
   - name:  monogo-db-port
-    port:  $(MONGO_DB_PORT)
-    targetPort:  $(MONGO_DB_PORT)
+    port: 27017
+    targetPort:  27017
