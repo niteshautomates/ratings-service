@@ -58,11 +58,6 @@ spec:
             configMapKeyRef:
               name: mongodb-configmap # Corrected configmap name
               key: MONGO_INITDB_DATABASE
-        - name: MONGO_APP_PORT
-          valueFrom:
-            configMapKeyRef:
-              name: mongo-configmap
-              key: MONGO_APP_PORT
         - name: MONGO_IMAGE_NAME
           valueFrom:
             configMapKeyRef:

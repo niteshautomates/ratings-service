@@ -31,12 +31,6 @@ spec:
                 name: mongo-configmap
                 key: MONGO_INITDB_DATABASE
 
-          - name:  MONGO_DB_PORT
-            valueFrom:
-              configMapKeyref:
-                name: mongo-configmap
-                key: MONGO_DB_PORT
-
           - name:  MONGO_INITDB_ROOT_USERNAME
             valueFrom:
               configMapKeyref:
